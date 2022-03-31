@@ -4,7 +4,7 @@ export { bundle } from "./bundle";
 export type { BundleArgs } from "./bundle";
 
 export { loadMetroConfig } from "./config";
-export type { MetroConfigOverrides } from "./config";
+export type { MetroConfig, MetroConfigOverrides } from "./config";
 
 export { createTerminal } from "./terminal";
 export type { MetroTerminal } from "./terminal";

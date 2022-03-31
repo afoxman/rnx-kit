@@ -105,14 +105,14 @@ const emptySerializerHook = (_graph: Graph, _delta: DeltaResult): void => {
 /**
  * Customize the Metro configuration.
  *
- * @param metroConfigReadonly Metro configuration
+ * @param metroConfig Metro configuration
  * @param detectCyclicDependencies When true, cyclic dependency checking is enabled with a default set of options. Otherwise the object allows for fine-grained control over the detection process.
  * @param detectDuplicateDependencies When true, duplicate dependency checking is enabled with a default set of options. Otherwise, the object allows for fine-grained control over the detection process.
  * @param typescriptValidation When true, TypeScript type-checking is enabled with a default set of options. Otherwise, the object allows for fine-grained control over the type-checking process.
  * @param experimental_treeShake When true, experimental tree-shaking is enabled.
  */
 export function customizeMetroConfig(
-  metroConfigReadonly: InputConfigT,
+  metroConfig: InputConfigT,
   detectCyclicDependencies: boolean | CyclicDetectorOptions,
   detectDuplicateDependencies: boolean | DuplicateDetectorOptions,
   typescriptValidation: boolean | TypeScriptValidationOptions,
@@ -120,7 +120,7 @@ export function customizeMetroConfig(
 ): void {
   //  We will be making changes to the Metro configuration. Coerce from a
   //  type with readonly props to a type where the props are writeable.
-  const metroConfig = metroConfigReadonly as InputConfigT;
+  const serializer = metroConfig.serializer as SerializerConfigT;
 
   const plugins: MetroPlugin[] = [];
   if (typeof detectDuplicateDependencies === "object") {
@@ -135,7 +135,7 @@ export function customizeMetroConfig(
   }
 
   if (experimental_treeShake) {
-    metroConfig.serializer.customSerializer = MetroSerializerEsbuild(plugins);
+    serializer.customSerializer = MetroSerializerEsbuild(plugins);
     Object.assign(metroConfig.transformer, esbuildTransformerConfig);
   } else if (plugins.length > 0) {
     // MetroSerializer acts as a CustomSerializer, and it works with both
@@ -148,11 +148,11 @@ export function customizeMetroConfig(
     //
     // Since it can handle either scenario, just coerce it to whatever
     // the current version of Metro expects.
-    metroConfig.serializer.customSerializer = MetroSerializer(
+    serializer.customSerializer = MetroSerializer(
       plugins
     ) as SerializerConfigT["customSerializer"];
   } else {
-    delete metroConfig.serializer.customSerializer;
+    delete serializer.customSerializer;
   }
 
   let hook = emptySerializerHook;
@@ -161,5 +161,5 @@ export function customizeMetroConfig(
   } else if (typescriptValidation !== false) {
     hook = createSerializerHook({});
   }
-  metroConfig.serializer.experimentalSerializerHook = hook;
+  serializer.experimentalSerializerHook = hook;
 }

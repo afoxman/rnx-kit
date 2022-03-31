@@ -51,6 +51,13 @@ export function createMetroBundleArgs({
     bundleEncoding,
     sourcemapOutput,
     sourcemapSourcesRoot,
+
+    // The following properties are required, but we don't allow control
+    // over them, or they have no effect.
+    resetCache: false,
+    resetGlobalCache: false,
+    sourcemapUseAbsolutePath: true,
+    verbose: false,
   };
 }
 
